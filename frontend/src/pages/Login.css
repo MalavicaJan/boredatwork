@@ -1,0 +1,89 @@
+.login-page {
+  min-height: 100vh;
+  padding: var(--space-5) var(--space-5) var(--space-9);
+  /* Not a game, so it takes the neutral page tone rather than borrowing
+     a game's colour. */
+  background: var(--tone-page);
+  color: var(--ink);
+}
+.login-container {
+  width: 100%;
+  max-width: 420px;
+  margin: var(--space-8) auto 0;
+  text-align: left;
+}
+
+.login-container h1 {
+  margin: 0 0 var(--space-7);
+  font-size: var(--text-3xl);
+  font-weight: 900;
+  letter-spacing: -2px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.login-form input {
+  width: 100%;
+  min-height: var(--tap-target);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border);
+  background: #fff;
+  color: #111;
+  font: inherit;
+  font-weight: 700;
+  outline: none;
+}
+
+.login-form input:focus {
+  box-shadow: 4px 4px 0 #111;
+}
+
+.login-form button {
+  width: fit-content;
+  min-height: var(--tap-target);
+  margin-top: var(--space-2);
+  padding: 0 var(--space-5);
+  border: var(--border);
+  background: #19b7b0;
+  color: #111;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 #111;
+}
+
+.login-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.login-form button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #111;
+}
+.login-note {
+  margin: 24px 0 0;
+  max-width: 380px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.login-error {
+  margin: 18px 0 0;
+  font-size: 14px;
+  font-weight: 800;
+}
+.register-link {
+  margin: 14px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.register-link a {
+  color: #111;
+  font-weight: 900;
+}

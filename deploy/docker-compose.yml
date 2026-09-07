@@ -1,0 +1,78 @@
+# Run from the deploy/ directory:  docker compose up -d
+#
+# Four services: Postgres, the API, a one-shot frontend build, and Caddy
+# in front of everything. Only Caddy publishes ports; Postgres and the
+# API are reachable only from inside the compose network.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    # The API waits for this, so it can't start against a database that
+    # is still initialising.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: ../backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      ALLOWED_ORIGINS: https://${DOMAIN}
+      # Caddy terminates TLS, so the cookie must be Secure.
+      COOKIE_SECURE: "true"
+      # Same origin, so lax is correct and gives CSRF protection.
+      COOKIE_SAMESITE: lax
+    depends_on:
+      db:
+        condition: service_healthy
+    # Create any missing tables, then serve. create_all only ADDS
+    # tables — column changes still need the SQL in migrations/.
+    command: >
+      sh -c "python -m app.create_tables &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  frontend:
+    build:
+      context: ../frontend
+      args:
+        VITE_API_URL: /api/v1
+    volumes:
+      - frontend_dist:/out
+    # One-shot: builds, copies dist/ into the shared volume, exits.
+    restart: "no"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - frontend_dist:/srv/frontend:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      - caddy_logs:/var/log/caddy
+    depends_on:
+      frontend:
+        condition: service_completed_successfully
+
+volumes:
+  db_data:
+  frontend_dist:
+  caddy_data:
+  caddy_config:
+  caddy_logs:

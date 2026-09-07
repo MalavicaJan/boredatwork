@@ -1,0 +1,134 @@
+.sudoku-difficulties {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-7);
+}
+
+.sudoku-difficulty {
+  min-height: var(--tap-target);
+  padding: 0 var(--space-4);
+  border: var(--border);
+  background: #fff;
+  color: #111;
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: capitalize;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #000;
+}
+
+.sudoku-difficulty.selected {
+  background: #111;
+  color: #fff;
+}
+
+.sudoku-difficulty:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Aligned to the board's edges, not the page's. */
+.sudoku-status {
+  max-width: 468px;
+  margin: 0 auto var(--space-3);
+}
+
+.sudoku-board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  max-width: 468px;
+  margin: 0 auto;
+  border: 4px solid #000;
+  background: #000;
+  gap: 1px;
+}
+
+.sudoku-cell {
+  aspect-ratio: 1;
+  border: 0;
+  background: #fff;
+  color: #111;
+  font-size: 26px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.sudoku-cell.peer {
+  background: #f0f0f0;
+}
+
+.sudoku-cell.given {
+  background: #e4e4e4;
+  cursor: default;
+}
+
+.sudoku-cell.selected {
+  background: #19b7b0;
+}
+
+.sudoku-cell.incorrect {
+  background: #ff8a8a;
+  color: #111;
+}
+
+.sudoku-cell.box-right {
+  margin-right: 2px;
+}
+
+.sudoku-cell.box-bottom {
+  margin-bottom: 2px;
+}
+
+.sudoku-cell:disabled {
+  cursor: default;
+}
+
+/* Same breathing room Wordly leaves between its board and keyboard.
+   A grid rather than a wrapping flex row, so the nine digits always sit
+   on one line and Clear gets its own full-width row instead of the pad
+   reflowing at the container's whim. */
+.sudoku-pad {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: var(--space-2);
+  max-width: 468px;
+  margin: var(--space-7) auto 0;
+}
+
+.sudoku-pad-key {
+  width: 100%;
+  height: var(--tap-target);
+  border: var(--border);
+  background: #fff;
+  color: #111;
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #000;
+}
+
+.sudoku-pad-key.wide {
+  grid-column: 1 / -1;
+  padding: 0 var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.sudoku-pad-key:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+
+  .sudoku-cell {
+    font-size: 20px;
+  }
+
+  .sudoku-pad-key {
+    height: 40px;
+    font-size: 18px;
+  }
+}

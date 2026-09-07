@@ -1,0 +1,221 @@
+.home {
+  min-height: 100vh;
+  padding: var(--space-5) var(--space-6) var(--space-9);
+  /* Stated rather than inherited, so the centring is a decision and
+     not an accident of whatever #root happens to set. */
+  text-align: center;
+}
+
+/* The header is the one row that isn't centred: logo left, account
+   right. */
+.header {
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo {
+  font-size: var(--text-lg);
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.logged-in-user {
+  font-weight: 900;
+}
+
+.progress-link {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.login-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target);
+  padding: 0 var(--space-4);
+  border: var(--border);
+  background: #19b7b0;
+  color: var(--ink);
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.login-button:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.hero {
+  max-width: 1200px;
+  margin: var(--space-8) auto var(--space-9);
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(64px, 9vw, 120px);
+  line-height: 0.85;
+  letter-spacing: -7px;
+  font-weight: 900;
+}
+
+.subtitle {
+  max-width: 46ch;
+  margin: var(--space-6) auto 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: var(--line-normal);
+}
+
+.hero-signup {
+  margin: var(--space-4) auto 0;
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+.hero-signup a {
+  color: var(--ink);
+}
+
+.game-section {
+  max-width: 1200px;
+  margin: 0 auto var(--space-9);
+}
+
+.section-heading {
+  margin-bottom: var(--space-6);
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: var(--text-2xl);
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.section-heading p {
+  max-width: 60ch;
+  margin: var(--space-2) auto 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+}
+
+.game-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  padding: var(--space-6);
+  border: var(--border);
+  /* Placeholder cards stay neutral; real ones get their game's colour. */
+  background: rgba(255, 255, 255, 0.45);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: var(--shadow-lg);
+}
+
+.game-card.active {
+  background: var(--game-bg, var(--surface));
+  cursor: pointer;
+}
+
+.game-card-title {
+  font-size: var(--text-2xl);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: var(--line-tight);
+}
+
+.game-card-description {
+  margin-top: var(--space-3);
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: var(--line-normal);
+}
+
+.game-card-action {
+  margin-top: auto;
+  padding-top: var(--space-6);
+  font-size: var(--text-xs);
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.game-card.active:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 10px 10px 0 var(--ink);
+}
+
+@media (max-width: 900px) {
+  .home {
+    padding: var(--space-4) var(--space-4) var(--space-8);
+  }
+
+  .hero {
+    margin: var(--space-8) auto var(--space-8);
+  }
+
+  .game-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero-signup {
+  margin: var(--space-4) auto 0;
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+.hero-signup a {
+  color: var(--ink);
+}
+
+.game-section {
+    margin-bottom: var(--space-8);
+  }
+}
+
+@media (max-width: 560px) {
+  .game-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .game-card {
+    min-height: 0;
+    padding: var(--space-5);
+  }
+
+  .hero h1 {
+    letter-spacing: -4px;
+  }
+
+  .user-menu {
+    gap: var(--space-3);
+  }
+}

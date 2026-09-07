@@ -1,0 +1,71 @@
+.progress-page {
+  min-height: 100vh;
+  padding: 28px 40px 60px;
+  background: var(--tone-page);
+  color: #111;
+}
+
+.progress-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 90px auto 0;
+}
+
+.progress-eyebrow {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.progress-container h1 {
+  margin: 0 0 35px;
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: -4px;
+}
+
+.progress-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 20px 22px;
+  border: 3px solid #111;
+  background: #fff;
+  box-shadow: 5px 5px 0 #111;
+  font-size: 18px;
+}
+
+.progress-card span {
+  font-weight: 900;
+}
+
+.progress-back {
+  display: inline-block;
+  margin-top: 25px;
+  color: #111;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.progress-games {
+  align-items: flex-start;
+}
+
+.progress-game-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: right;
+}
+
+.progress-game-list span {
+  font-weight: 900;
+  text-transform: capitalize;
+}
+.progress-message {
+  margin-top: var(--space-5);
+  font-size: var(--text-md);
+  font-weight: 600;
+}

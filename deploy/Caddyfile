@@ -1,0 +1,38 @@
+# Caddy terminates TLS (certificate from Let's Encrypt, renewed
+# automatically) and serves the site and the API from ONE origin.
+#
+# That is the whole reason this file exists: same origin means no CORS,
+# and SameSite=lax on the session cookie keeps working as CSRF
+# protection. Splitting the frontend onto a different host would mean
+# SameSite=none plus a CSRF token of your own.
+
+{$DOMAIN} {
+	encode gzip
+
+	# The API. Registered first, so it wins over the SPA fallback.
+	handle /api/* {
+		reverse_proxy app:8000
+	}
+
+	# Everything else is the built frontend. try_files sends unknown
+	# paths to index.html so client-side routes like /sudoku work on a
+	# hard refresh, instead of 404ing.
+	handle {
+		root * /srv/frontend
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 10MiB
+			roll_keep 5
+		}
+	}
+}

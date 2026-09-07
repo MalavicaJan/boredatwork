@@ -1,0 +1,137 @@
+/* The one line of status above the board. */
+.wordly-countdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0 0 var(--space-6);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.wordly-countdown strong {
+  font-weight: 900;
+}
+
+.wordly-board {
+  width: 350px;
+  margin: 0 auto var(--space-7);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-2);
+}
+
+.wordly-tile {
+  aspect-ratio: 1;
+  border: 3px solid #111;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 900;
+  transition: transform 0.08s ease;
+}
+
+.wordly-tile:not(:empty) {
+  transform: scale(1.03);
+}
+
+.wordly-tile-correct {
+  background: #19b7b0;
+}
+
+.wordly-tile-present {
+  background: #ffd84d;
+}
+
+.wordly-tile-absent {
+  background: #bdbdbd;
+}
+
+.wordly-keyboard {
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Rows are laid out explicitly, so they stagger like a real keyboard
+   instead of reflowing with the window. */
+.wordly-keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.wordly-keyboard button {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 44px;
+  height: 48px;
+  padding: 0 9px;
+  border: 2px solid #111;
+  background: #fff;
+  color: #111;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #111;
+}
+
+/* Scoped to beat ".wordly-keyboard button", which sets max-width and
+   would otherwise clamp these to a letter key's width and clip the
+   label. */
+.wordly-keyboard button.keyboard-wide {
+  flex: 0 0 auto;
+  min-width: 64px;
+  max-width: none;
+  padding: 0 var(--space-3);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.wordly-keyboard button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #111;
+}
+.keyboard-correct {
+  background: #19b7b0 !important;
+}
+
+.keyboard-present {
+  background: #ffd84d !important;
+}
+
+.keyboard-absent {
+  background: #bdbdbd !important;
+  color: rgba(17, 17, 17, 0.55);
+}
+.wordly-result {
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-md);
+}
+
+@media (max-width: 520px) {
+
+  .wordly-board {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .wordly-keyboard button {
+    height: 44px;
+    padding: 0 4px;
+  }
+
+  .wordly-keyboard button.keyboard-wide {
+    min-width: 54px;
+    font-size: 11px;
+  }
+}

@@ -1,0 +1,125 @@
+.blackout-controls {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+.blackout-input {
+  flex: 1 1 240px;
+  min-height: var(--tap-target);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border);
+  background: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.blackout-input:disabled {
+  opacity: 0.55;
+}
+
+.blackout-status {
+  justify-content: flex-start;
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.blackout-result {
+  margin: 0 0 var(--space-5);
+}
+
+.blackout-result.won {
+  background: #b8f5d0;
+}
+
+.blackout-article {
+  padding: 26px 28px;
+  border: 3px solid #000;
+  background: #fff;
+  box-shadow: 7px 7px 0 #000;
+}
+
+.blackout-title {
+  margin: 0 0 18px;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1.5;
+}
+
+.blackout-body {
+  margin: 0;
+  font-size: 18px;
+  line-height: 2;
+}
+
+.blackout-word {
+  white-space: pre-wrap;
+}
+
+.blackout-word.hit {
+  background: #ffd84d;
+}
+
+/* A hidden word: a black bar as wide as the word it conceals. */
+.blackout-redacted {
+  display: inline-block;
+  height: 0.95em;
+  margin-bottom: -0.14em;
+  background: #111;
+  border-radius: 1px;
+}
+
+.blackout-attribution {
+  margin: var(--space-5) 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.blackout-attribution a {
+  color: #111;
+}
+
+.blackout-log {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: var(--space-6);
+}
+
+.blackout-log-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 2px solid #000;
+  background: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.55;
+}
+
+.blackout-log-entry.found {
+  background: #ffd84d;
+  opacity: 1;
+}
+
+.blackout-log-entry em {
+  font-style: normal;
+  font-weight: 800;
+}
+
+@media (max-width: 600px) {
+
+  .blackout-article {
+    padding: 18px;
+    box-shadow: 5px 5px 0 #000;
+  }
+
+  .blackout-body {
+    font-size: 16px;
+  }
+}

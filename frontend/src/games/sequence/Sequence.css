@@ -1,0 +1,106 @@
+/* This file previously contained Sudoku's stylesheet verbatim, which is
+   why the Sequence page rendered unstyled. Layout now comes from
+   GamePage.css; what's left here is the board itself. */
+
+.sequence-round {
+  margin: 0 0 var(--space-5);
+  font-size: var(--text-sm);
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* The digits being memorised, and the input that replaces them, share a
+   box of the same height so the board doesn't jump between phases. */
+.sequence-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 132px;
+  padding: var(--space-5);
+  border: var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.sequence-display {
+  font-size: clamp(38px, 9vw, 60px);
+  font-weight: 900;
+  letter-spacing: 12px;
+  /* letter-spacing adds a trailing gap; pull it back so digits look centred. */
+  text-indent: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sequence-form {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.sequence-input {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--tap-target);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  letter-spacing: 8px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.sequence-input:focus {
+  outline: none;
+  background: #fffbe6;
+}
+
+.sequence-input:disabled {
+  opacity: 0.6;
+}
+
+.sequence-progress {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+.sequence-pip {
+  width: 100%;
+  max-width: 52px;
+  height: 10px;
+  border: 2px solid var(--ink);
+  background: transparent;
+}
+
+.sequence-pip.cleared {
+  background: var(--ink);
+}
+
+.sequence-pip.current {
+  background: var(--surface);
+}
+
+.sequence-score {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-2xl);
+  font-weight: 900;
+}
+
+@media (max-width: 700px) {
+  .sequence-stage {
+    min-height: 108px;
+    padding: var(--space-4);
+  }
+
+  .sequence-input {
+    font-size: var(--text-xl);
+    letter-spacing: 5px;
+  }
+}

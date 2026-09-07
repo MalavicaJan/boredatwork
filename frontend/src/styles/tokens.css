@@ -1,0 +1,63 @@
+/* Design tokens. One rhythm for the whole site, so spacing is a choice
+   made once here rather than re-guessed in every stylesheet. */
+
+:root {
+  /* Spacing scale. Steps are far enough apart to be visibly different;
+     picking "the next one up" is always a real change. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+
+  /* Type scale. */
+  --text-xs: 13px;
+  --text-sm: 15px;
+  --text-md: 17px;
+  --text-lg: 20px;
+  --text-xl: 26px;
+  --text-2xl: 34px;
+  --text-3xl: 52px;
+
+  --line-tight: 1.2;
+  --line-normal: 1.6;
+  --line-loose: 1.9;
+
+  /* The brutalist frame: hard borders, offset shadows, no blur. */
+  --ink: #111;
+  --border-width: 3px;
+  --border: var(--border-width) solid var(--ink);
+  --shadow-sm: 3px 3px 0 var(--ink);
+  --shadow-md: 5px 5px 0 var(--ink);
+  --shadow-lg: 8px 8px 0 var(--ink);
+  --radius: 2px;
+
+  /* Every game owns a colour. The homepage card uses the same one, so
+     the card is a preview of where you're about to land. */
+  --tone-wordly: #b8f5d0;
+  --tone-sequence: #d7c9f7;
+  --tone-wikiguessr: #f5c9b8;
+  --tone-sudoku: #ffd84d;
+  --tone-memory: #b8d4f5;
+  --tone-practice: #d9f7e7;
+
+  /* Neutral so the six tinted cards can all be read against it. */
+  --tone-page: #f4f1e8;
+
+  --surface: #fff;
+  --muted: rgba(17, 17, 17, 0.68);
+
+  /* Anything tappable is at least this tall. */
+  --tap-target: 46px;
+}
+
+.tone-wordly { --game-bg: var(--tone-wordly); }
+.tone-sequence { --game-bg: var(--tone-sequence); }
+.tone-wikiguessr { --game-bg: var(--tone-wikiguessr); }
+.tone-sudoku { --game-bg: var(--tone-sudoku); }
+.tone-memory { --game-bg: var(--tone-memory); }
+.tone-practice { --game-bg: var(--tone-practice); }

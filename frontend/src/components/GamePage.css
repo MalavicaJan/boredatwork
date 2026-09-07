@@ -1,0 +1,164 @@
+/* The shell every game page sits in: same header, same title block,
+   same rhythm. Individual games style only their board. */
+
+.game-page {
+  min-height: 100vh;
+  padding: var(--space-5) var(--space-5) var(--space-9);
+  background: var(--game-bg, var(--tone-page));
+  color: var(--ink);
+}
+
+.game-page-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.game-page-inner.wide {
+  max-width: 900px;
+}
+
+.game-page-intro {
+  margin-bottom: var(--space-8);
+}
+
+.game-page-eyebrow {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.game-page-title {
+  margin: 0;
+  font-size: var(--text-3xl);
+  font-weight: 900;
+  line-height: var(--line-tight);
+  letter-spacing: -2px;
+}
+
+.game-page-meta {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* Only shown to signed-out players, and only on games that actually
+   record a result. */
+.game-page-streak {
+  margin: var(--space-4) 0 0;
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.game-page-streak a {
+  color: var(--ink);
+}
+
+.game-page-lede {
+  max-width: 46ch;
+  margin: var(--space-5) auto 0;
+  font-size: var(--text-md);
+  font-weight: 500;
+  line-height: var(--line-normal);
+}
+
+/* Shared controls, so a button is the same size and weight everywhere. */
+.game-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-target);
+  padding: 0 var(--space-5);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--surface);
+  font-size: var(--text-md);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+}
+
+.game-button.secondary {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.game-button:hover:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.game-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--shadow-md);
+}
+
+.game-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-7);
+}
+
+.game-status {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-5);
+  margin-bottom: var(--space-4);
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+.game-panel {
+  margin-top: var(--space-7);
+  padding: var(--space-5) var(--space-6);
+  border: var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.game-panel h2 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-xl);
+  font-weight: 900;
+}
+
+.game-panel p {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-md);
+}
+
+.game-note {
+  margin-top: var(--space-5);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.game-message {
+  margin-top: var(--space-5);
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .game-page {
+    padding: var(--space-4) var(--space-4) var(--space-8);
+  }
+
+  .game-page-title {
+    font-size: var(--text-2xl);
+    letter-spacing: -1px;
+  }
+
+  .game-page-intro {
+    margin-bottom: var(--space-6);
+  }
+}
