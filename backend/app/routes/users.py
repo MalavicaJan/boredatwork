@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Cookie, Depends, HTTPException, status
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 from app.security import hash_password,verify_password
 from app.database import get_db, settings
@@ -9,7 +9,32 @@ from app.models.session import UserSession
 from app.models.game_result import GameResult
 from app.schemas.streak import StreakResponse
 from app.services.streak import get_streaks
+from app.rate_limit import (
+    client_ip,
+    login_ip_limiter,
+    login_user_limiter,
+    register_ip_limiter,
+)
+from app.security import password_hasher
 from app.session import create_session, get_current_user,  hash_session_token
+
+# Verified against when the username doesn't exist, so a missing user
+# costs the same time as a wrong password. Without this, response time
+# tells an attacker which usernames are real.
+DUMMY_HASH = password_hasher.hash("not-a-real-password")
+
+
+def enforce(limiter, key: str, what: str) -> None:
+    retry_after = limiter.check(key)
+
+    if retry_after is None:
+        return
+
+    raise HTTPException(
+        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+        detail=f"Too many {what}. Try again in {retry_after} seconds.",
+        headers={"Retry-After": str(retry_after)},
+    )
 
 router = APIRouter(
     prefix="/api/v1/users",
@@ -17,13 +42,18 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=list[UserResponse])
-def list_users(db: Session = Depends(get_db)):
-    return db.query(User).all()
+# NOTE: there was a GET "/" here returning every user in the database,
+# unauthenticated. Removed — the site is public and nothing needs it.
 
 
 @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
+def create_user(
+    user: UserCreate,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    enforce(register_ip_limiter, client_ip(request), "sign-ups from your network")
+
     existing_user = db.query(User).filter(User.username == user.username).first()
 
     if existing_user:
@@ -42,7 +72,16 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 @router.post("/login")
-def login_user(user: UserLogin, db: Session = Depends(get_db)):
+def login_user(
+    user: UserLogin,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    address = client_ip(request)
+    username_key = user.username.lower()
+
+    enforce(login_ip_limiter, address, "login attempts from your network")
+    enforce(login_user_limiter, username_key, "login attempts for this account")
 
     existing_user = (
         db.query(User)
@@ -50,14 +89,26 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
         .first()
     )
 
-    if not existing_user or not verify_password(
-        user.password,
-        existing_user.password_hash,
-    ):
+    # Always verify something, so the response takes the same time
+    # whether or not the username exists.
+    if existing_user:
+        password_matches = verify_password(
+            user.password,
+            existing_user.password_hash,
+        )
+    else:
+        verify_password(user.password, DUMMY_HASH)
+        password_matches = False
+
+    if not password_matches:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",
         )
+
+    # Succeeded, so don't hold the earlier failures against them.
+    login_ip_limiter.reset(address)
+    login_user_limiter.reset(username_key)
 
     new_session,raw_token = create_session(existing_user.id)
 

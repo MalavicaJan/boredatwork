@@ -1,0 +1,15 @@
+# --- Add this to backend/test/conftest.py ---
+#
+# Rate-limit counters live in the process, so without this the attempts
+# made by one test count against the next and unrelated tests start
+# failing with 429.
+
+@pytest.fixture(autouse=True)
+def reset_rate_limits():
+    from app.rate_limit import clear_all
+
+    clear_all()
+
+    yield
+
+    clear_all()
