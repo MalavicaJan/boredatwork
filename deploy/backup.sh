@@ -1,29 +1,18 @@
 #!/usr/bin/env bash
-# Pull, rebuild and restart. Run from deploy/ on the server.
+# Nightly database dump, kept for 14 days.
 set -euo pipefail
 
 cd "$(dirname "$0")"
+source .env
 
-echo "==> Pulling latest code"
-git pull --ff-only
+BACKUP_DIR="${HOME}/backups"
+mkdir -p "$BACKUP_DIR"
 
-echo "==> Building images"
-docker compose build
+STAMP=$(date +%Y-%m-%d-%H%M)
+FILE="$BACKUP_DIR/boredatwork-$STAMP.sql.gz"
 
-echo "==> Starting"
-# --remove-orphans cleans up containers for services deleted from the file.
-docker compose up -d --remove-orphans
+docker compose exec -T db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" | gzip > "$FILE"
 
-echo "==> Waiting for the API"
-for _ in $(seq 1 30); do
-  if docker compose exec -T app python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')" 2>/dev/null; then
-    echo "    healthy"
-    break
-  fi
-  sleep 2
-done
+echo "Wrote $FILE"
 
-echo
-echo "Done. Reminder: create_tables only adds MISSING TABLES."
-echo "Column changes need the SQL in backend/migrations/, applied by hand:"
-echo "  docker compose exec -T db psql -U \$POSTGRES_USER -d \$POSTGRES_DB < ../backend/migrations/006_game_results_won.sql"
+find "$BACKUP_DIR" -name 'boredatwork-*.sql.gz' -mtime +14 -delete
