@@ -3,7 +3,13 @@ import { Link } from "react-router-dom";
 
 import GamePage from "../../components/GamePage";
 import "./Wordly.css";
-import { MAX_ATTEMPTS, WORD_LENGTH, WordlyBoard, WordlyKeyboard } from "./Board";
+import {
+  MAX_ATTEMPTS,
+  WORD_LENGTH,
+  WordlyBoard,
+  WordlyKeyboard,
+  letterStates,
+} from "./Board";
 import {
   getPracticeWord,
   revealPracticeWord,
@@ -168,6 +174,7 @@ export default function WordlyPractice() {
 
             <WordlyKeyboard
               disabled={locked}
+              states={letterStates(guesses)}
               onLetter={(letter) => {
                 if (locked || currentGuess.length >= WORD_LENGTH) return;
                 setError("");

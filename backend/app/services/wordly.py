@@ -195,3 +195,25 @@ def get_random_practice_word(
         # Pool of one: repeating beats returning nothing.
 
     return query.order_by(func.random()).first()
+
+
+def is_known_word(db: Session, guess: str) -> bool:
+    """True if the guess is a real word.
+
+    Any pool counts. Daily answers and practice words are real words
+    too, so a player is never told that a word they could be shown is
+    not a word.
+
+    An empty table means validation is off rather than everything being
+    rejected: a deployment that hasn't run the seed should be playable,
+    not broken.
+    """
+    if db.query(WordlyWord).count() == 0:
+        return True
+
+    return (
+        db.query(WordlyWord)
+        .filter(WordlyWord.word == guess.lower())
+        .first()
+        is not None
+    )

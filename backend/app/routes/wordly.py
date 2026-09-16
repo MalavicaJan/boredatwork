@@ -24,6 +24,7 @@ from app.services.wordly import (
     create_daily_challenge,
     evaluate_guess,
     get_guesses,
+    is_known_word,
     get_practice_word,
     get_random_practice_word,
     get_result,
@@ -63,6 +64,14 @@ def submit_wordly_guess(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Guess must be exactly {WORD_LENGTH} letters",
+        )
+
+    # Checked before anything is stored, so a rejected guess doesn't
+    # cost the player an attempt.
+    if not is_known_word(db, guess):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Not in word list",
         )
 
     result = evaluate_guess(challenge.word, guess)
@@ -216,6 +225,14 @@ def submit_practice_guess(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Guess must be exactly {WORD_LENGTH} letters",
+        )
+
+    # Checked before anything is stored, so a rejected guess doesn't
+    # cost the player an attempt.
+    if not is_known_word(db, guess):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Not in word list",
         )
 
     return WordlyPracticeGuessResponse(

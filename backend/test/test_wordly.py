@@ -1,6 +1,25 @@
 from datetime import date
 
+import pytest
+
 from app.models.wordly import WordlyChallenge
+from app.models.wordly_word import ALLOWED, WordlyWord
+
+
+# Guesses are validated against the word list now, so every word used
+# anywhere in this file has to be a known word. "music" is the daily
+# answer, seeded by conftest.
+TEST_DICTIONARY = [
+    "plane", "brick", "storm", "guard", "flint", "zebra",
+]
+
+
+@pytest.fixture(autouse=True)
+def test_dictionary(db_session):
+    for word in TEST_DICTIONARY:
+        db_session.add(WordlyWord(word=word, pool=ALLOWED))
+
+    db_session.commit()
 
 
 
@@ -435,7 +454,7 @@ def test_only_one_result_row_per_player_per_day(client, db_session):
 
 # --- Practice mode ---
 
-from app.models.wordly_word import PRACTICE, WordlyWord  # noqa: E402
+from app.models.wordly_word import PRACTICE  # noqa: E402
 
 
 def add_practice_word(db_session, word="crane"):
@@ -574,3 +593,79 @@ def test_practice_rejects_a_bad_guess_length(client, db_session):
     )
 
     assert response.status_code == 400
+
+
+# --- Dictionary validation ---
+#
+# Validation runs before the signed-in branch, so these exercise it
+# anonymously. That keeps them independent of session handling.
+
+def test_a_guess_that_is_not_a_word_is_rejected(client):
+    """RTYUI is five letters and all alphabetic, so a length check
+    alone lets it straight through."""
+    response = guess(client, "rtyui")
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Not in word list"
+
+
+def test_a_real_word_is_still_accepted(client):
+    assert guess(client, "plane").status_code == 200
+
+
+def test_the_daily_answer_is_always_guessable(client):
+    """The answer sits in the daily pool, not the allowed pool. If
+    validation only accepted one pool the game would be unwinnable."""
+    response = guess(client, "music")
+
+    assert response.status_code == 200
+    assert response.json()["correct"] is True
+
+
+def test_a_rejected_guess_is_not_recorded(client, db_session):
+    """Validation happens before anything is written, so a typo can't
+    cost an attempt."""
+    from app.models.wordly_guess import WordlyGuess
+
+    guess(client, "rtyui")
+    guess(client, "qwert")
+
+    assert db_session.query(WordlyGuess).count() == 0
+
+
+def test_practice_mode_validates_too(client, db_session):
+    db_session.add(WordlyWord(word="audio", pool=PRACTICE))
+    db_session.commit()
+
+    handle = client.get("/api/v1/wordly/practice/new").json()
+
+    rejected = client.post(
+        "/api/v1/wordly/practice/guess",
+        json={"word_id": handle["word_id"], "guess": "rtyui"},
+    )
+
+    assert rejected.status_code == 400
+    assert rejected.json()["detail"] == "Not in word list"
+
+    accepted = client.post(
+        "/api/v1/wordly/practice/guess",
+        json={"word_id": handle["word_id"], "guess": "plane"},
+    )
+
+    assert accepted.status_code == 200
+
+
+def test_validation_is_off_when_no_words_are_loaded(client, db_session):
+    """A deployment that hasn't run the seed should be playable, not a
+    game that refuses every guess."""
+    from app.models.wordly import WordlyChallenge as Challenge
+
+    # A challenge must exist before the words go, or one can't be made.
+    client.get("/api/v1/wordly/today")
+
+    db_session.query(WordlyWord).delete()
+    db_session.commit()
+
+    assert db_session.query(Challenge).count() == 1
+
+    assert guess(client, "rtyui").status_code == 200

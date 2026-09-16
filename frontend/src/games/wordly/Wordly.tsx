@@ -3,7 +3,13 @@ import { Link } from "react-router-dom";
 
 import GamePage from "../../components/GamePage";
 import "./Wordly.css";
-import { MAX_ATTEMPTS, WORD_LENGTH, WordlyBoard, WordlyKeyboard } from "./Board";
+import {
+  MAX_ATTEMPTS,
+  WORD_LENGTH,
+  WordlyBoard,
+  WordlyKeyboard,
+  letterStates,
+} from "./Board";
 import {
   getWordlyState,
   submitWordlyGuess,
@@ -238,6 +244,7 @@ function Wordly() {
 
             <WordlyKeyboard
               disabled={locked}
+              states={letterStates(guesses)}
               onLetter={handleLetter}
               onBackspace={handleBackspace}
               onEnter={handleSubmit}
