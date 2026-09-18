@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import GamePage from "../../components/GamePage";
+import { useAuth } from "../../api/auth";
+import { clearKey, loadJson, saveJson } from "../../lib/storage";
 import "./Wordly.css";
 import {
   MAX_ATTEMPTS,
@@ -16,6 +18,19 @@ import {
   submitWordlyGuess,
   type WordlyGuessResult,
 } from "./wordly";
+
+// Anonymous players have no server-side state, so without this a
+// refresh wipes the board — and worse, hands them a fresh six
+// guesses, since the six-row cap is enforced only by the client.
+const STORAGE_KEY = "wordly:run";
+
+type SavedRun = {
+  challengeDate: string;
+  guesses: WordlyGuessResult[];
+  completed: boolean;
+  won: boolean;
+  answer: string | null;
+};
 
 /** The daily challenge rolls over at UTC midnight, not local midnight.
  *  Counting down to the local one was wrong by an hour or two for
@@ -62,18 +77,39 @@ function Wordly() {
   // Enter press.
   const inFlight = useRef(false);
 
+  // Signed-in players are restored from the server instead; only
+  // anonymous runs are kept here.
+  const { username } = useAuth();
+  const anonymous = username === null;
+
   useEffect(() => {
     async function loadGame() {
       try {
         const state = await getWordlyState();
 
-        setGuesses(state.guesses);
         setChallengeDate(state.challenge_date);
+        setSignedIn(state.attempts_used > 0 || state.completed);
+
+        const saved = loadJson<SavedRun>(STORAGE_KEY);
+        const sameDay = saved?.challengeDate === state.challenge_date;
+
+        // The server is the authority whenever it has anything to say.
+        // Only fall back to the saved run for an anonymous player, who
+        // has nothing stored server-side.
+        if (state.attempts_used === 0 && !state.completed && sameDay && saved) {
+          setGuesses(saved.guesses);
+          setCompleted(saved.completed);
+          setWon(saved.won);
+          setAnswer(saved.answer);
+          return;
+        }
+
+        if (!sameDay) clearKey(STORAGE_KEY);
+
+        setGuesses(state.guesses);
         setCompleted(state.completed);
         setWon(state.won);
         setAnswer(state.answer);
-        // Only a logged-in player has server-side state to report.
-        setSignedIn(state.attempts_used > 0 || state.completed);
       } catch {
         setError("Couldn't load today's Wordly.");
       } finally {
@@ -196,6 +232,21 @@ function Wordly() {
 
     setCurrentGuess((guess) => guess.slice(0, -1));
   }
+
+  useEffect(() => {
+    if (loading || !challengeDate) return;
+
+    // Signed-in progress already survives a refresh via /state.
+    if (!anonymous) return;
+
+    saveJson(STORAGE_KEY, {
+      challengeDate,
+      guesses,
+      completed,
+      won,
+      answer,
+    });
+  }, [loading, anonymous, challengeDate, guesses, completed, won, answer]);
 
   const locked = completed || submitting;
 

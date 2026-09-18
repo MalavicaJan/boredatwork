@@ -1,12 +1,28 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import GamePage from "../../components/GamePage";
 import "./Blackout.css";
+import { clearKey, loadJson, saveJson } from "../../lib/storage";
 import {
   getBlackoutToday,
   revealBlackout,
   submitBlackoutGuess,
   type BlackoutToken,
 } from "./blackout";
+
+// Keyed by challenge, so yesterday's run can't restore onto today's
+// article. Nothing about a run is stored server-side, so this is the
+// only thing standing between a refresh and forty lost guesses.
+const STORAGE_KEY = "wikiguessr:run";
+
+type SavedRun = {
+  challengeId: number;
+  log: GuessLogEntry[];
+  titleTokens: BlackoutToken[];
+  bodyTokens: BlackoutToken[];
+  solved: boolean;
+  gaveUp: boolean;
+  sourceUrl: string | null;
+};
 
 type GuessLogEntry = {
   guess: string;
@@ -95,9 +111,24 @@ export default function Blackout() {
       .then((state) => {
         setChallengeId(state.challenge_id);
         setChallengeDate(state.challenge_date);
+        setTitleWords(state.title_word_count);
+
+        const saved = loadJson<SavedRun>(STORAGE_KEY);
+
+        if (saved && saved.challengeId === state.challenge_id) {
+          setTitleTokens(saved.titleTokens);
+          setBodyTokens(saved.bodyTokens);
+          setLog(saved.log);
+          setSolved(saved.solved);
+          setGaveUp(saved.gaveUp);
+          setSourceUrl(saved.sourceUrl);
+          return;
+        }
+
+        // A run from another day: start clean.
+        clearKey(STORAGE_KEY);
         setTitleTokens(state.title_tokens);
         setBodyTokens(state.body_tokens);
-        setTitleWords(state.title_word_count);
       })
       .catch((err) =>
         setError(
@@ -163,6 +194,22 @@ export default function Blackout() {
       setSubmitting(false);
     }
   }
+
+  // Written after every change, so a refresh, a stray back button or
+  // a phone backgrounding the tab costs nothing.
+  useEffect(() => {
+    if (loading || challengeId === null) return;
+
+    saveJson(STORAGE_KEY, {
+      challengeId,
+      log,
+      titleTokens,
+      bodyTokens,
+      solved,
+      gaveUp,
+      sourceUrl,
+    });
+  }, [loading, challengeId, log, titleTokens, bodyTokens, solved, gaveUp, sourceUrl]);
 
   const finished = solved || gaveUp;
   const hiddenLeft = countHidden(bodyTokens) + countHidden(titleTokens);
