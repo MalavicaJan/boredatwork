@@ -232,7 +232,7 @@ def submit_practice_guess(
     if not is_known_word(db, guess):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Not in word list",
+            detail="Not a word",
         )
 
     return WordlyPracticeGuessResponse(
