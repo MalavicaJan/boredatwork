@@ -16,6 +16,7 @@ from app.schemas.wordly import (
     WordlyPracticeRevealRequest,
     WordlyPracticeRevealResponse,
     WordlyPracticeWordResponse,
+    WordlyRevealResponse,
     WordlyStateResponse,
 )
 from app.services.wordly import (
@@ -28,6 +29,7 @@ from app.services.wordly import (
     get_practice_word,
     get_random_practice_word,
     get_result,
+    may_reveal,
     record_result,
 )
 from app.session import get_optional_current_user
@@ -128,6 +130,25 @@ def submit_wordly_guess(
         # Only on a loss: a winner already knows the word.
         answer=challenge.word if game_over and not correct else None,
     )
+
+
+@router.post("/reveal", response_model=WordlyRevealResponse)
+def reveal_wordly_answer(
+    current_user: User | None = Depends(get_optional_current_user),
+    db: Session = Depends(get_db),
+):
+    """Show today's word. Open to anonymous players by design: playing
+    without an account is the point of the site, and gating the answer
+    behind a sign-up would be a poor trade for both of us."""
+    challenge = create_daily_challenge(db, today())
+
+    if not may_reveal(db, current_user, challenge):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Finish today's game first",
+        )
+
+    return WordlyRevealResponse(answer=challenge.word)
 
 
 @router.get("/state", response_model=WordlyStateResponse)
@@ -232,7 +253,7 @@ def submit_practice_guess(
     if not is_known_word(db, guess):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Not a word",
+            detail="Not in word list",
         )
 
     return WordlyPracticeGuessResponse(

@@ -217,3 +217,22 @@ def is_known_word(db: Session, guess: str) -> bool:
         .first()
         is not None
     )
+
+
+def may_reveal(db: Session, user, challenge) -> bool:
+    """Whether the answer can be shown.
+
+    Anonymous players: always. Nothing is stored for them, so the
+    server cannot tell a finished game from an unfinished one — and
+    making people register to see the answer is a worse outcome than
+    someone spoiling their own puzzle.
+
+    Signed-in players: only once they have finished. Here the server
+    does know, so it may as well not hand them a mid-game answer.
+    They could of course log out and ask anonymously; this stops the
+    casual peek, not a determined one.
+    """
+    if user is None:
+        return True
+
+    return get_result(db, user.id, challenge.id) is not None

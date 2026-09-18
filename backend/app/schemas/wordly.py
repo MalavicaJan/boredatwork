@@ -71,3 +71,7 @@ class WordlyPracticeRevealRequest(BaseModel):
 
 class WordlyPracticeRevealResponse(BaseModel):
     answer: str
+
+
+class WordlyRevealResponse(BaseModel):
+    answer: str

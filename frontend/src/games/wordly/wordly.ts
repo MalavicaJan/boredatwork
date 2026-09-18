@@ -137,3 +137,21 @@ export async function revealPracticeWord(wordId: number): Promise<string> {
 
   return data.answer;
 }
+
+
+/** Today's word. Open to anonymous players: the server only declines
+ *  for a signed-in player who hasn't finished yet. */
+export async function revealWordlyAnswer(): Promise<string> {
+  const response = await fetch(`${API_BASE_URL}/wordly/reveal`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Couldn't reveal the answer.");
+  }
+
+  const data = await response.json();
+
+  return data.answer;
+}

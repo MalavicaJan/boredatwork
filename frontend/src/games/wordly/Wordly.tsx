@@ -12,6 +12,7 @@ import {
 } from "./Board";
 import {
   getWordlyState,
+  revealWordlyAnswer,
   submitWordlyGuess,
   type WordlyGuessResult,
 } from "./wordly";
@@ -231,10 +232,27 @@ function Wordly() {
                   <span>The answer was {answer.toUpperCase()}.</span>
                 )}
 
-                {!won && !answer && !signedIn && (
-                  <span>
-                    <Link to="/login">Sign in</Link> to see the answer and
-                    keep a streak.
+                {/* The answer is never withheld to push a sign-up.
+                    Anonymous play is the point of the site. */}
+                {!won && !answer && (
+                  <button
+                    className="wordly-new-word"
+                    onClick={async () => {
+                      try {
+                        setAnswer(await revealWordlyAnswer());
+                      } catch {
+                        setError("Couldn't reveal the answer.");
+                      }
+                    }}
+                  >
+                    Show the answer
+                  </button>
+                )}
+
+                {!signedIn && (
+                  <span className="wordly-streak-note">
+                    <Link to="/register">Create an account</Link> to keep a
+                    daily streak.
                   </span>
                 )}
               </div>

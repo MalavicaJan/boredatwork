@@ -669,3 +669,51 @@ def test_validation_is_off_when_no_words_are_loaded(client, db_session):
     assert db_session.query(Challenge).count() == 1
 
     assert guess(client, "rtyui").status_code == 200
+
+
+# --- Revealing the answer ---
+
+def test_anonymous_players_can_see_the_answer(client):
+    """Playing without an account is the point of the site; making
+    people register to find out the word would be a bad trade."""
+    response = client.post("/api/v1/wordly/reveal")
+
+    assert response.status_code == 200
+    assert response.json()["answer"] == "music"
+
+
+def test_a_signed_in_player_mid_game_is_refused(client, db_session):
+    """The rule is unit-tested rather than driven through login, so it
+    doesn't depend on session handling."""
+    from app.models.user import User
+    from app.services.wordly import create_daily_challenge, may_reveal
+
+    user = User(username="midgame", password_hash="x")
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+
+    challenge = create_daily_challenge(db_session, date.today())
+
+    assert may_reveal(db_session, None, challenge) is True
+    assert may_reveal(db_session, user, challenge) is False
+
+
+def test_a_signed_in_player_who_finished_may_reveal(client, db_session):
+    from app.models.user import User
+    from app.services.wordly import (
+        create_daily_challenge,
+        may_reveal,
+        record_result,
+    )
+
+    user = User(username="finished", password_hash="x")
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+
+    challenge = create_daily_challenge(db_session, date.today())
+
+    record_result(db_session, user.id, challenge.id, score=6, won=False)
+
+    assert may_reveal(db_session, user, challenge) is True

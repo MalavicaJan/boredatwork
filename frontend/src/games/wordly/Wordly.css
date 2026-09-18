@@ -100,8 +100,13 @@
   background: #19b7b0 !important;
 }
 
+/* Deliberately paler than the board's #ffd84d.
+   On the board, yellow is a result â€” it reports what just happened and
+   should be loud. On the keyboard it is reference: a standing note
+   about letters already tried. Matching the board's saturation made
+   the keyboard compete with it for attention. */
 .keyboard-present {
-  background: #ffd84d !important;
+  background: #ffeeb8 !important;
 }
 
 .keyboard-absent {
@@ -134,4 +139,11 @@
     min-width: 54px;
     font-size: 11px;
   }
+}
+
+/* A note, not a gate: the answer is available either way. */
+.wordly-streak-note {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  opacity: 0.75;
 }
