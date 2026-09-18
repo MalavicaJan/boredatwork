@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
@@ -35,6 +36,17 @@ export default function GamePage({
   children,
 }: GamePageProps) {
   const { username, loading } = useAuth();
+
+  // A single-page app keeps the shell's title on every route unless
+  // told otherwise, so every page would read the same in a browser
+  // tab, in history, and in a bookmark.
+  useEffect(() => {
+    document.title = `${title} — boredatwork.xyz`;
+
+    return () => {
+      document.title = "boredatwork.xyz — short games for a tiny break";
+    };
+  }, [title]);
 
   return (
     <main className={`game-page ${tone}`}>

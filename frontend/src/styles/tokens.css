@@ -53,6 +53,11 @@
 
   /* Anything tappable is at least this tall. */
   --tap-target: 46px;
+
+  /* Deliberately outside the game palette: a focus ring must never be
+     mistaken for a game colour, and has to stay visible on both the
+     pastel backgrounds and the near-black buttons. */
+  --focus: #1348ff;
 }
 
 .tone-wordly { --game-bg: var(--tone-wordly); }
